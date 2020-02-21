@@ -49,7 +49,23 @@ class FunArgs:
 
 
 # used funs in batch
-stream_cipher_funs = { }
+stream_cipher_funs = { 
+    'Grain': FunArgs(16, 16, 12, (0, 1, 2, 3)),
+    'HC-128': FunArgs(16, 16, 16, (1, 2, 3)),
+    'MICKEY': FunArgs(16, 16, 16, (0, 1, 2)),
+    'Rabbit': FunArgs(16, 16, 8, (0, 1, 2, 3, 4)),
+    'Salsa20': FunArgs(8, 16, 8, (2, 4, 6)),
+    'SOSEMANUK': FunArgs(16, 16, 16, (3, 4, 5, 6)),
+    'Trivium': FunArgs(8, 10, 10, (1, 2, 3, 4, 5)),
+    'F-FCSR': FunArgs(16, 16, 8, (2, 3, 4, 5)),
+    'Chacha': FunArgs(32, 32, 8, (1, 2, 3, 4)),
+    'RC4': FunArgs(16, 16, 0, (1, 2, 3)),
+    'DECIM': FunArgs(24, 10, 8, (1, 2, 3, 4)),
+    'Fubuki': FunArgs(16, 16, 16, (1, 2, 3, 4)),
+    'Hermes': FunArgs(16, 10, 0, (1, 2, 3, 4)),
+    'LEX': FunArgs(16, 16, 16, (1, 2, 3, 4)),
+    'TSC-4': FunArgs(32, 10, 10, (1, 2, 3, 4)),
+}
 stream_cipher_default = {
     'type': 'stream_cipher',
     'generator': 'pcg32',
@@ -78,6 +94,16 @@ hash_funs = {
     'SHA2': FunArgs(32, None, None, (5, 6, 7)),
     'Tiger': FunArgs(24, None, None, (1, 2)),
     'Whirlpool': FunArgs(64, None, None, (2, 4)),
+
+    'Abacus': FunArgs(32, None, None, (1, 135)),
+    'AURORA': FunArgs(32, None, None, (0, 17)),
+    'Blender': FunArgs(64, None, None, (0, 32)),
+    'CHI': FunArgs(64, None, None, (0, 40)),
+    'CubeHash': FunArgs(32, None, None, (0, 8)),
+    'DynamicSHA': FunArgs(48, None, None, (0, 16)),
+    'Sarmal': FunArgs(32, None, None, (0, 16)),
+    'SIMD': FunArgs(32, None, None, (0, 4)),
+    'TIB3': FunArgs(48, None, None, (0, 16)),
 }
 hash_default = {
     'type': 'hash',
@@ -243,7 +269,7 @@ def get_tv_size(main_args):
     if main_args.stream_type == "hash":
         return hash_funs[main_args.fun].block_size
     if main_args.stream_type == "block":
-        return block[main_args.fun].block_size
+        return block_funs[main_args.fun].block_size
     return 16
 
 
@@ -323,10 +349,10 @@ def single_execution_parse(main_args):
         else:
             sys.exit('Unknown function and unspecified stream. Set -s! Function was: ' + main_args.fun)
     else:
-        if main_args.fun in stream_cipher_funs and main_args.stream_type != 'stream-cipher':
+        if main_args.fun in stream_cipher_funs and main_args.stream_type != 'stream_cipher':
             sys.exit('Mismatch arguments: function '
                      + main_args.fun
-                     + ' is from stream-cipher, your stream_type is '
+                     + ' is from stream_cipher, your stream_type is '
                      + main_args.stream_type)
         elif main_args.fun in hash_funs and main_args.stream_type != 'hash':
             sys.exit('Mismatch arguments: function '
@@ -353,7 +379,7 @@ def single_execution_args(parser):
         '--stream_type',
         type=str,
         default='',
-        help='Stream: for AES, DES... = block, Salsa... = stream-cipher, Keccak... = hash'
+        help='Stream: for AES, DES... = block, Salsa... = stream_cipher, Keccak... = hash'
     )
     parser.add_argument(
         '-f',
